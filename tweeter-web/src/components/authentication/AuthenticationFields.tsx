@@ -1,4 +1,10 @@
-const AuthenticationFields = () => {
+interface Props {
+  onKeyDownFunction: (event: React.KeyboardEvent<HTMLElement>) => void;
+  setAlias: (alias: string) => void;
+  setPassword: (password: string) => void;
+}
+
+const AuthenticationFields = (props: Props) => {
   return (
     <>
       <div className="form-floating">
@@ -8,8 +14,8 @@ const AuthenticationFields = () => {
           size={50}
           id="aliasInput"
           placeholder="name@example.com"
-          onKeyDown={loginOnEnter}
-          onChange={(event) => setAlias(event.target.value)}
+          onKeyDown={props.onKeyDownFunction}
+          onChange={(event) => props.setAlias(event.target.value)}
         />
         <label htmlFor="aliasInput">Alias</label>
       </div>
@@ -19,8 +25,8 @@ const AuthenticationFields = () => {
           className="form-control bottom"
           id="passwordInput"
           placeholder="Password"
-          onKeyDown={loginOnEnter}
-          onChange={(event) => setPassword(event.target.value)}
+          onKeyDown={props.onKeyDownFunction}
+          onChange={(event) => props.setPassword(event.target.value)}
         />
         <label htmlFor="passwordInput">Password</label>
       </div>
