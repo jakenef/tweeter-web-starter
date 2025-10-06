@@ -14,6 +14,9 @@ import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import { AuthToken, FakeData, Status, User } from "tweeter-shared";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import { useUserInfo } from "./components/userInfo/UserHooks";
+import { UserItemView } from "./presenter/UserItemPresenter";
+import { FolloweePresenter } from "./presenter/FolloweePresenter";
+import { FollowerPresenter } from "./presenter/FollowerPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -38,26 +41,6 @@ const App = () => {
 
 const AuthenticatedRoutes = () => {
   const { displayedUser } = useUserInfo();
-
-  const loadMoreFollowees = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: User | null
-  ): Promise<[User[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-  };
-
-  const loadMoreFollowers = async (
-    authToken: AuthToken,
-    userAlias: string,
-    pageSize: number,
-    lastItem: User | null
-  ): Promise<[User[], boolean]> => {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
-  };
 
   const loadMoreStoryItems = async (
     authToken: AuthToken,
@@ -113,9 +96,10 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={`followees-${displayedUser!.alias}`}
-              itemDescription="followees"
               featureURL="/followees"
-              loadMore={loadMoreFollowees}
+              presenterFactory={(view: UserItemView) =>
+                new FolloweePresenter(view)
+              }
             />
           }
         />
@@ -124,9 +108,10 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={`followers-${displayedUser!.alias}`}
-              itemDescription="followers"
               featureURL="/followers"
-              loadMore={loadMoreFollowers}
+              presenterFactory={(view: UserItemView) =>
+                new FollowerPresenter(view)
+              }
             />
           }
         />
