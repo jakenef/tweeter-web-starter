@@ -1,4 +1,4 @@
-import { AuthToken, Status, User } from "tweeter-shared";
+import { Status } from "tweeter-shared";
 import { useState, useEffect, useRef } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useParams } from "react-router-dom";
@@ -41,11 +41,13 @@ const StatusItemScroller = (props: Props) => {
       displayedUserAliasParam &&
       displayedUserAliasParam != displayedUser!.alias
     ) {
-      getUser(authToken!, displayedUserAliasParam!).then((toUser) => {
-        if (toUser) {
-          setDisplayedUser(toUser);
-        }
-      });
+      presenter
+        .current!.getUser(authToken, displayedUser!.alias)
+        .then((toUser) => {
+          if (toUser) {
+            setDisplayedUser(toUser);
+          }
+        });
     }
   }, [displayedUserAliasParam]);
 
@@ -62,13 +64,6 @@ const StatusItemScroller = (props: Props) => {
 
   const loadMoreItems = async () => {
     presenter.current!.loadMoreItems(authToken!, displayedUser!.alias);
-  };
-
-  const getUser = async (
-    authToken: AuthToken,
-    alias: string
-  ): Promise<User | null> => {
-    return presenter.current!.getUser(authToken, alias);
   };
 
   return (
