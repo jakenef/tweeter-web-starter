@@ -1,10 +1,9 @@
-import { NavigateFunction } from "react-router-dom";
 import { UserService } from "../model.service/UserService";
 import { AuthToken, User } from "tweeter-shared";
 
 export interface LoginView {
   displayErrorMessage: (message: string) => void;
-  navigate: NavigateFunction;
+  navigate: (url: string) => void;
   updateUserInfo: (
     currentUser: User,
     displayedUser: User | null,

@@ -1,11 +1,10 @@
-import { NavigateFunction } from "react-router-dom";
 import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { Buffer } from "buffer";
 
 export interface RegisterView {
   displayErrorMessage: (message: string) => void;
-  navigate: NavigateFunction;
+  navigate: (url: string) => void;
   updateUserInfo: (
     currentUser: User,
     displayedUser: User | null,
