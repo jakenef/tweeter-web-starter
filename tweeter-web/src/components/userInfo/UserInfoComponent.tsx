@@ -9,6 +9,7 @@ import {
 } from "../../presenter/UserInfoPresenter";
 
 const UserInfo = () => {
+  // ask about this: should some of these just only be in the presenter as attributes?
   const [isFollower, setIsFollower] = useState(false);
   const [followeeCount, setFolloweeCount] = useState(-1);
   const [followerCount, setFollowerCount] = useState(-1);
@@ -34,27 +35,30 @@ const UserInfo = () => {
   if (!presenterRef.current) {
     presenterRef.current = new UserInfoPresenter(listener);
   }
-  const presenter = presenterRef.current!;
 
   if (!displayedUser) {
     setDisplayedUser(currentUser!);
   }
 
   useEffect(() => {
-    presenter.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
-    presenter.setNumbFollowees(authToken!, displayedUser!);
-    presenter.setNumbFollowers(authToken!, displayedUser!);
+    presenterRef.current!.setIsFollowerStatus(
+      authToken!,
+      currentUser!,
+      displayedUser!
+    );
+    presenterRef.current!.setNumbFollowees(authToken!, displayedUser!);
+    presenterRef.current!.setNumbFollowers(authToken!, displayedUser!);
   }, [displayedUser]);
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
-    // ask about this
+    // ask about this: should be pushed into presenter?
     event.preventDefault();
     setDisplayedUser(currentUser!);
     navigate(`${getBaseUrl()}/${currentUser!.alias}`);
   };
 
   const getBaseUrl = (): string => {
-    // ask about this
+    // ask about this: should be pushed into presenter?
     const segments = location.pathname.split("/@");
     return segments.length > 1 ? segments[0] : "/";
   };
@@ -64,7 +68,7 @@ const UserInfo = () => {
   ): Promise<void> => {
     event.preventDefault();
     setIsLoading(true);
-    await presenter.followDisplayedUser(displayedUser!, authToken!);
+    await presenterRef.current!.followDisplayedUser(displayedUser!, authToken!);
     setIsLoading(false);
   };
 
@@ -73,8 +77,11 @@ const UserInfo = () => {
   ): Promise<void> => {
     event.preventDefault();
     setIsLoading(true);
-    await presenter.unfollowDisplayedUser(displayedUser!, authToken!);
-    setIsLoading(true);
+    await presenterRef.current!.unfollowDisplayedUser(
+      displayedUser!,
+      authToken!
+    );
+    setIsLoading(false);
   };
 
   return (
