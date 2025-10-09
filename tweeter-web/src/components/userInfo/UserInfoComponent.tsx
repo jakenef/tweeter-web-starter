@@ -9,7 +9,6 @@ import {
 } from "../../presenter/UserInfoPresenter";
 
 const UserInfo = () => {
-  // ask about this: should some of these just only be in the presenter as attributes?
   const [isFollower, setIsFollower] = useState(false);
   const [followeeCount, setFolloweeCount] = useState(-1);
   const [followerCount, setFollowerCount] = useState(-1);
@@ -51,14 +50,12 @@ const UserInfo = () => {
   }, [displayedUser]);
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
-    // ask about this: should be pushed into presenter?
     event.preventDefault();
     setDisplayedUser(currentUser!);
     navigate(`${getBaseUrl()}/${currentUser!.alias}`);
   };
 
   const getBaseUrl = (): string => {
-    // ask about this: should be pushed into presenter?
     const segments = location.pathname.split("/@");
     return segments.length > 1 ? segments[0] : "/";
   };

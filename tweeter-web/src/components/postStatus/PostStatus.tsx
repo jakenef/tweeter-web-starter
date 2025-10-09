@@ -34,7 +34,6 @@ const PostStatus = () => {
   };
 
   const clearPost = (event: React.MouseEvent) => {
-    // ask about this: can this stay in view?
     event.preventDefault();
     setPost("");
   };
