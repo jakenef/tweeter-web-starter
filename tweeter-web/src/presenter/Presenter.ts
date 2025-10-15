@@ -14,7 +14,7 @@ export abstract class Presenter<V extends View> {
   }
 
   protected async doFailureReportingOperation(
-    operation: () => Promise<void>,
+    operation: () => Promise<void | boolean>,
     operationDescription: string
   ) {
     try {
