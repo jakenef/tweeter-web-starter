@@ -18,7 +18,7 @@ export class PostStatusPresenter extends Presenter<PostStatusView> {
     currentUser: User,
     post: string
   ) {
-    var postingStatusToastId;
+    let postingStatusToastId: string;
     this.doFailureReportingOperation(async () => {
       postingStatusToastId = this.view.displayInfoMessage(
         "Posting status...",
