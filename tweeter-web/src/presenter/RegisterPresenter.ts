@@ -2,6 +2,7 @@ import { User, AuthToken } from "tweeter-shared";
 import { UserService } from "../model.service/UserService";
 import { Buffer } from "buffer";
 import { Presenter, View } from "./Presenter";
+import { AuthActionPresenter } from "./AuthActionPresenter";
 
 export interface RegisterView extends View {
   navigate: (url: string) => void;
@@ -13,7 +14,7 @@ export interface RegisterView extends View {
   ) => void;
 }
 
-export class RegisterPresenter extends Presenter<RegisterView> {
+export class RegisterPresenter extends AuthActionPresenter<RegisterView> {
   private userService = new UserService();
   private _imageUrl: string = "";
   private _imageFileExtension: string = "";
@@ -47,6 +48,38 @@ export class RegisterPresenter extends Presenter<RegisterView> {
     );
   }
 
+  public serviceAuth(
+    userAlias: string,
+    password: string,
+    firstName?: string,
+    lastName?: string,
+    imageBytes?: Uint8Array,
+    imageFileExtension?: string
+  ): Promise<[User, AuthToken]> {
+    return this.userService.register(
+      firstName!,
+      lastName!,
+      userAlias,
+      password,
+      this.imageBytes,
+      this._imageFileExtension
+    );
+  }
+
+  public navigationAuth(
+    originalUrl: string | undefined,
+    user: User,
+    rememberMe: boolean,
+    authToken: AuthToken
+  ): void {
+    this.view.updateUserInfo(user, user, authToken, rememberMe);
+    this.view.navigate(`/feed/${user.alias}`);
+  }
+
+  public actionDescription(): string {
+    return "register user";
+  }
+
   public doRegister = async (
     firstName: string,
     lastName: string,
@@ -54,20 +87,16 @@ export class RegisterPresenter extends Presenter<RegisterView> {
     password: string,
     rememberMe: boolean
   ) => {
-    await this.doFailureReportingOperation(async () => {
-      const [user, authToken] = await this.userService.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        this.imageBytes,
-        this._imageFileExtension
-      );
-
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-      this.view.navigate(`/feed/${user.alias}`);
-      return true;
-    }, "register user");
+    await this.doAuthOperation(
+      alias,
+      password,
+      rememberMe,
+      undefined,
+      firstName,
+      lastName,
+      this.imageBytes,
+      this.imageFileExtension
+    );
   };
 
   private getFileExtension = (file: File): string | undefined => {

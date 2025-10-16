@@ -58,6 +58,36 @@ export class UserInfoPresenter extends Presenter<UserInfoView> {
     this.view.deleteMessage(unfollowingUserToast!);
   }
 
+  private async doUserFollowAction(
+    displayedUser: User,
+    authToken: AuthToken,
+    isFollow: boolean
+  ) {
+    let actionDesc: string = "";
+    let actionCall: (
+      authToken: AuthToken,
+      displayedUser: User
+    ) => Promise<[followerCount: number, followeeCount: number]>;
+
+    var followingUserToast;
+    await this.doFailureReportingOperation(async () => {
+      followingUserToast = this.view.displayInfoMessage(
+        `${actionDesc} ${displayedUser!.name}...`,
+        0
+      );
+
+      // const [followerCount, followeeCount] = await actionCall(
+      //   authToken!,
+      //   displayedUser!
+      // );
+
+      // this.view.setIsFollower(true);
+      // this.view.setFollowerCount(followerCount);
+      // this.view.setFolloweeCount(followeeCount);
+    }, "follow user");
+    this.view.deleteMessage(followingUserToast!);
+  }
+
   public async setIsFollowerStatus(
     authToken: AuthToken,
     currentUser: User,
