@@ -28,7 +28,7 @@ export class LoginPresenter extends Presenter<LoginView> {
     this.doFailureReportingOperation(async () => {
       const [user, authToken] = await this.userService.login(alias, password);
 
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
+      this.view.updateUserInfo(user, user, authToken, rememberMe); // this is duplicated with register
 
       if (originalUrl) {
         this.view.navigate(originalUrl);

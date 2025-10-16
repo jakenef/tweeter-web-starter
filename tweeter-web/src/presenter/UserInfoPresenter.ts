@@ -1,13 +1,11 @@
 import { AuthToken, User } from "tweeter-shared";
 import { FollowService } from "../model.service/FollowService";
-import { Presenter, View } from "./Presenter";
+import { MessageView, Presenter, View } from "./Presenter";
 
-export interface UserInfoView extends View {
+export interface UserInfoView extends MessageView {
   setIsFollower: (isFollower: boolean) => void;
   setFolloweeCount: (followCount: number) => void;
   setFollowerCount: (followCount: number) => void;
-  displayInfoMessage: (message: string, duration: number) => void;
-  deleteMessage: (messageId: string) => void;
 }
 
 export class UserInfoPresenter extends Presenter<UserInfoView> {
