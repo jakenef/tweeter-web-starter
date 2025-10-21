@@ -1,4 +1,4 @@
-import { AuthToken, Status } from "tweeter-shared";
+import { Status } from "tweeter-shared";
 import { PagedItemPresenter } from "./PagedItemPresenter";
 import { StatusService } from "../model.service/StatusService";
 
