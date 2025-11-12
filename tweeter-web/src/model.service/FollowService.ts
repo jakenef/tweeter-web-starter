@@ -81,13 +81,12 @@ export class FollowService implements Service {
     authToken: AuthToken,
     userToFollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request: FollowCountRequest = {
+      token: authToken.token,
+      user: userToFollow.dto,
+    };
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(authToken, userToFollow);
-    const followeeCount = await this.getFolloweeCount(authToken, userToFollow);
+    const [followerCount, followeeCount] = await this.server.follow(request);
 
     return [followerCount, followeeCount];
   }
@@ -96,19 +95,12 @@ export class FollowService implements Service {
     authToken: AuthToken,
     userToUnfollow: User
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    const request: FollowCountRequest = {
+      token: authToken.token,
+      user: userToUnfollow.dto,
+    };
 
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(
-      authToken,
-      userToUnfollow
-    );
-    const followeeCount = await this.getFolloweeCount(
-      authToken,
-      userToUnfollow
-    );
+    const [followerCount, followeeCount] = await this.server.unfollow(request);
 
     return [followerCount, followeeCount];
   }

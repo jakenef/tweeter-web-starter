@@ -24,3 +24,4 @@ export type { TweeterResponse } from "./model/net/response/TweeterResponse";
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
 export type { FollowCountResponse } from "./model/net/response/FollowCountResponse";
 export type { IsFollowerStatusResponse } from "./model/net/response/IsFollowerStatusResponse";
+export type { FollowResponse } from "./model/net/response/FollowResponse";
