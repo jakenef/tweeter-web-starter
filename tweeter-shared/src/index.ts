@@ -17,8 +17,10 @@ export type { UserDto } from "./model/dto/UserDto";
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
 export type { PagedUserItemRequest } from "./model/net/request/PagedUserItemRequest";
 export type { FollowCountRequest } from "./model/net/request/FollowCountRequest";
+export type { IsFollowerStatusRequest } from "./model/net/request/IsFollowerStatusRequest";
 
 // Responses
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
 export type { PagedUserItemResponse } from "./model/net/response/PagedUserItemResponse";
 export type { FollowCountResponse } from "./model/net/response/FollowCountResponse";
+export type { IsFollowerStatusResponse } from "./model/net/response/IsFollowerStatusResponse";
