@@ -3,37 +3,33 @@ import {
   AuthToken,
   User,
   FakeData,
-  GetUserRequest,
-  LoginRequest,
-  LogoutRequest,
+  UserDto,
+  AuthTokenDto,
 } from "tweeter-shared";
 import { Service } from "./Service";
-import { ServerFacade } from "../network/ServerFacade";
 
 export class UserService implements Service {
-  server = new ServerFacade();
-
   public async getUser(
-    authToken: AuthToken,
+    authToken: string,
     alias: string
-  ): Promise<User | null> {
-    const request: GetUserRequest = {
-      alias,
-      token: authToken.token,
-    };
-    return this.server.getUser(request);
+  ): Promise<UserDto | null> {
+    // TODO: Replace with the result of calling server
+    const user = FakeData.instance.findUserByAlias(alias);
+    return user ? user.dto : null;
   }
 
   public async login(
     alias: string,
     password: string
-  ): Promise<[User, AuthToken]> {
-    const request: LoginRequest = {
-      alias,
-      password,
-    };
+  ): Promise<[UserDto, AuthTokenDto]> {
+    // TODO: Replace with the result of calling the server
+    const user = FakeData.instance.firstUser;
 
-    return this.server.login(request);
+    if (user === null) {
+      throw new Error("Invalid alias or password");
+    }
+
+    return [user.dto, FakeData.instance.authToken.dto];
   }
 
   public async register(
@@ -58,10 +54,5 @@ export class UserService implements Service {
     return [user, FakeData.instance.authToken];
   }
 
-  public async logout(authToken: AuthToken): Promise<void> {
-    const request: LogoutRequest = {
-      token: authToken.token,
-    };
-    await this.server.logout(request);
-  }
+  public async logout(token: string): Promise<void> {}
 }

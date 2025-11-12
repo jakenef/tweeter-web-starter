@@ -1,7 +1,7 @@
 import { UserDto } from "../../dto/UserDto";
 
 export interface IsFollowerStatusRequest {
-  token: string;
-  user: UserDto;
-  selectedUser: UserDto;
+  readonly token: string;
+  readonly user: UserDto;
+  readonly selectedUser: UserDto;
 }
