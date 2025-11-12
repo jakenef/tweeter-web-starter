@@ -1,15 +1,28 @@
-import { AuthToken, User, FakeData } from "tweeter-shared";
+import {
+  AuthToken,
+  User,
+  FakeData,
+  PagedUserItemRequest,
+} from "tweeter-shared";
 import { Service } from "./Service";
+import { ServerFacade } from "../network/ServerFacade";
 
 export class FollowService implements Service {
+  server = new ServerFacade();
+
   public async loadMoreFollowees(
     authToken: AuthToken,
     userAlias: string,
     pageSize: number,
     lastItem: User | null
   ): Promise<[User[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
+    const request: PagedUserItemRequest = {
+      token: authToken.token,
+      userAlias,
+      lastItem: lastItem?.dto ?? null,
+      pageSize,
+    };
+    return this.server.getMoreFollowees(request);
   }
 
   public async loadMoreFollowers(
