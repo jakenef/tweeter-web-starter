@@ -114,6 +114,21 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
+          /followers/get: ##### TODO: Change "/user/get" to the actual endpoint URL
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  ##### TODO: Change "userGetFunction" to the actual function name. (Don't delete the $, {}, or .Arn suffix.)
+                  ##### The function name must agree with the "Web API Lambda functions" section below.
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getFollowers.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+
           /user/create: ##### TODO: Set endpoint URL
             post:
               consumes: *commonConsumes
@@ -176,6 +191,24 @@ Resources:
             ##### TODO: Modify the Path property to the actual endpoint URL.
             ##### It must match the URL in the "Endpoint definitions" section above.
             Path: /followees/get
+            Method: POST
+
+  getFollowers:
+    Type: AWS::Serverless::Function
+    Properties:
+      ##### TODO: Change "userGetFunction" to the actual function name.
+      FunctionName: getFollowers
+      ##### TODO: Modify Handler property to match your code. This identifies the exact function that the lambda should run.
+      Handler: lambda/follow/GetFollowersLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            ##### TODO: Modify the Path property to the actual endpoint URL.
+            ##### It must match the URL in the "Endpoint definitions" section above.
+            Path: /followers/get
             Method: POST
 
   userCreateFunction: ##### TODO: Set function name

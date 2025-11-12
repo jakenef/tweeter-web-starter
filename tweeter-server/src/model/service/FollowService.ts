@@ -13,6 +13,16 @@ export class FollowService implements Service {
     return this.getFakeData(lastItem, pageSize, userAlias);
   }
 
+  public async loadMoreFollowers(
+    token: string,
+    userAlias: string,
+    pageSize: number,
+    lastItem: UserDto | null
+  ): Promise<[UserDto[], boolean]> {
+    // TODO: Replace with the result of calling server
+    return this.getFakeData(lastItem, pageSize, userAlias);
+  }
+
   private async getFakeData(
     lastItem: UserDto | null,
     pageSize: number,
@@ -26,20 +36,6 @@ export class FollowService implements Service {
 
     const dtos = items.map((user) => user.dto);
     return [dtos, hasMore];
-  }
-
-  public async loadMoreFollowers(
-    token: string,
-    userAlias: string,
-    pageSize: number,
-    lastItem: UserDto | null
-  ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return FakeData.instance.getPageOfUsers(
-      User.fromDto(lastItem),
-      pageSize,
-      userAlias
-    );
   }
 
   public async getFolloweeCount(
