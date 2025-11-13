@@ -23,6 +23,7 @@ export type { LogoutRequest } from "./model/net/request/LogoutRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
 export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 export type { PagedStatusItemRequest } from "./model/net/request/PagedStatusItemRequest";
+export type { PostStatusRequest } from "./model/net/request/PostStatusRequest";
 
 // Responses
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";

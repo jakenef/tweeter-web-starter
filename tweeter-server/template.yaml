@@ -270,6 +270,18 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
+          /postStatus:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${postStatus.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
             #
             # TODO: ADD MORE ENDPOINT DEFINITIONS HERE
             #
@@ -486,6 +498,20 @@ Resources:
           Properties:
             RestApiId: !Ref tweeterApi
             Path: /getFeed
+            Method: POST
+
+  postStatus:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: postStatus
+      Handler: lambda/status/PostStatusLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /postStatus
             Method: POST
 
   #
