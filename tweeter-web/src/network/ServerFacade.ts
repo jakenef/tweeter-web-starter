@@ -10,9 +10,12 @@ import {
   LoginRequest,
   LoginResponse,
   LogoutRequest,
+  PagedStatusItemRequest,
+  PagedStatusItemResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
   RegisterRequest,
+  Status,
   TweeterResponse,
   User,
 } from "tweeter-shared";
@@ -216,6 +219,58 @@ export class ServerFacade {
         return [user!, authToken!];
       } else {
         throw new Error("user and authtoken must both be defined");
+      }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async getStory(
+    request: PagedStatusItemRequest
+  ): Promise<[Status[], boolean]> {
+    const response = await this.clientCommunicator.doPost<
+      PagedStatusItemRequest,
+      PagedStatusItemResponse
+    >(request, "/getStory");
+
+    const items: Status[] | null =
+      response.success && response.statusList
+        ? response.statusList.map((dto) => Status.fromDto(dto) as Status)
+        : null;
+
+    // Handle errors
+    if (response.success) {
+      if (items == null) {
+        throw new Error(`No statuses found`);
+      } else {
+        return [items, response.hasMore];
+      }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async getFeed(
+    request: PagedStatusItemRequest
+  ): Promise<[Status[], boolean]> {
+    const response = await this.clientCommunicator.doPost<
+      PagedStatusItemRequest,
+      PagedStatusItemResponse
+    >(request, "/getFeed");
+
+    const items: Status[] | null =
+      response.success && response.statusList
+        ? response.statusList.map((dto) => Status.fromDto(dto) as Status)
+        : null;
+
+    // Handle errors
+    if (response.success) {
+      if (items == null) {
+        throw new Error(`No statuses found`);
+      } else {
+        return [items, response.hasMore];
       }
     } else {
       console.error(response);

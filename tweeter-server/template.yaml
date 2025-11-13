@@ -244,6 +244,32 @@ Resources:
                 responses: *commonAmazonResponses
               responses: *commonSwaggerResponses
 
+          /getStory:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getStory.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+
+          /getFeed:
+            post:
+              consumes: *commonConsumes
+              produces: *commonProduces
+              x-amazon-apigateway-integration:
+                type: aws
+                httpMethod: POST
+                uri:
+                  Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getFeed.Arn}/invocations
+                requestTemplates: *commonRequestTemplates
+                responses: *commonAmazonResponses
+              responses: *commonSwaggerResponses
+
             #
             # TODO: ADD MORE ENDPOINT DEFINITIONS HERE
             #
@@ -432,6 +458,34 @@ Resources:
           Properties:
             RestApiId: !Ref tweeterApi
             Path: /register
+            Method: POST
+
+  getStory:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getStory
+      Handler: lambda/status/LoadMoreStoryItemsLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /getStory
+            Method: POST
+
+  getFeed:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getFeed
+      Handler: lambda/status/LoadMoreFeedItemsLambda.handler
+      Policies: *commonPolicies
+      Events:
+        PostApi:
+          Type: Api
+          Properties:
+            RestApiId: !Ref tweeterApi
+            Path: /getFeed
             Method: POST
 
   #

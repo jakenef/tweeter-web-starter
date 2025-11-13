@@ -7,12 +7,11 @@ export { AuthToken } from "./model/domain/AuthToken";
 
 // All classes that should be avaialble to other modules need to exported here. export * does not work when
 // uploading to lambda. Instead we have to list each export.
-// Other
-export { FakeData } from "./util/FakeData";
 
 // DTO's
 export type { UserDto } from "./model/dto/UserDto";
 export type { AuthTokenDto } from "./model/dto/AuthTokenDto";
+export type { StatusDto } from "./model/dto/StatusDto";
 
 // Requests
 export type { TweeterRequest } from "./model/net/request/TweeterRequest";
@@ -23,6 +22,7 @@ export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 export type { LogoutRequest } from "./model/net/request/LogoutRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
 export type { RegisterRequest } from "./model/net/request/RegisterRequest";
+export type { PagedStatusItemRequest } from "./model/net/request/PagedStatusItemRequest";
 
 // Responses
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";
@@ -32,3 +32,7 @@ export type { IsFollowerStatusResponse } from "./model/net/response/IsFollowerSt
 export type { FollowResponse } from "./model/net/response/FollowResponse";
 export type { GetUserResponse } from "./model/net/response/GetUserResponse";
 export type { LoginResponse } from "./model/net/response/LoginResponse";
+export type { PagedStatusItemResponse } from "./model/net/response/PagedStatusItemResponse";
+
+// Other
+export { FakeData } from "./util/FakeData";
