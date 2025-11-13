@@ -1,7 +1,6 @@
 import {
   AuthToken,
   Status,
-  FakeData,
   PagedStatusItemRequest,
   PostStatusRequest,
 } from "tweeter-shared";
