@@ -25,6 +25,15 @@ describe("ServerFacade Tests", () => {
     expect(users).toBeDefined();
     expect(hasMore).toBeDefined();
     expect(hasMore).toBeTruthy();
+    expect(Array.isArray(users)).toBe(true);
+    expect(users.length).toBeGreaterThan(0);
+
+    // Check first user structure
+    expect(users[0].firstName).toBeDefined();
+    expect(users[0].lastName).toBeDefined();
+    expect(users[0].alias).toBeDefined();
+    expect(users[0].imageUrl).toBeDefined();
+    expect(users[0].alias[0]).toBe("@");
   });
 
   it("registers successfully", async () => {
@@ -46,6 +55,18 @@ describe("ServerFacade Tests", () => {
     expect(authToken).toBeDefined();
     expect(user.alias[0]).toBe("@");
     expect(authToken.token.length).toBeGreaterThan(2);
+
+    // Check user object structure
+    expect(user.firstName).toBeDefined();
+    expect(user.firstName).not.toBe("");
+    expect(user.lastName).toBeDefined();
+    expect(user.lastName).not.toBe("");
+    expect(user.imageUrl).toBeDefined();
+
+    // Check authToken structure
+    expect(authToken.token).toBeDefined();
+    expect(authToken.token).not.toBe("");
+    expect(authToken.timestamp).toBeDefined();
   });
 
   it("gets followee count successfully", async () => {
@@ -63,5 +84,6 @@ describe("ServerFacade Tests", () => {
 
     expect(response).toBeDefined();
     expect(typeof response).toBe("number");
+    expect(response).toBeGreaterThanOrEqual(0);
   });
 });
