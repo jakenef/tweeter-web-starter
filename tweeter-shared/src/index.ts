@@ -22,6 +22,7 @@ export type { IsFollowerStatusRequest } from "./model/net/request/IsFollowerStat
 export type { GetUserRequest } from "./model/net/request/GetUserRequest";
 export type { LogoutRequest } from "./model/net/request/LogoutRequest";
 export type { LoginRequest } from "./model/net/request/LoginRequest";
+export type { RegisterRequest } from "./model/net/request/RegisterRequest";
 
 // Responses
 export type { TweeterResponse } from "./model/net/response/TweeterResponse";

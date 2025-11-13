@@ -1,4 +1,8 @@
-import { FollowCountRequest, PagedUserItemRequest } from "tweeter-shared";
+import {
+  FollowCountRequest,
+  PagedUserItemRequest,
+  RegisterRequest,
+} from "tweeter-shared";
 import { ServerFacade } from "../../src/network/ServerFacade";
 import "isomorphic-fetch";
 
@@ -16,15 +20,32 @@ describe("ServerFacade Tests", () => {
       token: "fake_token",
       userAlias: "user1",
     };
-    const response = await server.getMoreFollowers(request);
+    const [users, hasMore] = await server.getMoreFollowers(request);
 
-    expect(response).toBeDefined();
-    // has more
-    expect(response[1]).toBeTruthy();
+    expect(users).toBeDefined();
+    expect(hasMore).toBeDefined();
+    expect(hasMore).toBeTruthy();
   });
 
   it("registers successfully", async () => {
-    fail("not implemented");
+    const request: RegisterRequest = {
+      firstName: "John",
+      lastName: "Doe",
+      alias: "@johndoe",
+      password: "password123",
+      userImageBytes: "",
+      imageFileExtension: "jpg",
+    };
+
+    const [user, authToken] = await server.register(request);
+
+    console.log(user);
+    console.log(authToken);
+
+    expect(user).toBeDefined();
+    expect(authToken).toBeDefined();
+    expect(user.alias[0]).toBe("@");
+    expect(authToken.token.length).toBeGreaterThan(2);
   });
 
   it("gets followee count successfully", async () => {

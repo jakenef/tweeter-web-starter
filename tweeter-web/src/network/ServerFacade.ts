@@ -12,6 +12,7 @@ import {
   LogoutRequest,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  RegisterRequest,
   TweeterResponse,
   User,
 } from "tweeter-shared";
@@ -197,6 +198,26 @@ export class ServerFacade {
     >(request, "/logout");
 
     if (!response.success) {
+      console.error(response);
+      throw new Error(response.message ?? undefined);
+    }
+  }
+
+  public async register(request: RegisterRequest): Promise<[User, AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      RegisterRequest,
+      LoginResponse
+    >(request, "/register");
+
+    if (response.success) {
+      if (response.user && response.authToken) {
+        const user = User.fromDto(response.user);
+        const authToken = AuthToken.fromDto(response.authToken);
+        return [user!, authToken!];
+      } else {
+        throw new Error("user and authtoken must both be defined");
+      }
+    } else {
       console.error(response);
       throw new Error(response.message ?? undefined);
     }
