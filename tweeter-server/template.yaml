@@ -605,6 +605,21 @@ Resources:
           Projection:
             ProjectionType: ALL
 
+  authtoken_table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: authtoken_table
+      AttributeDefinitions:
+        - AttributeName: token
+          AttributeType: S
+      KeySchema:
+        - AttributeName: token
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
   #
   # TODO: ADD MORE TABLE DEFINITIONS HERE
   #
