@@ -620,6 +620,21 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
+  user_table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: user_table
+      AttributeDefinitions:
+        - AttributeName: user_alias
+          AttributeType: S
+      KeySchema:
+        - AttributeName: user_alias
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
   #
   # TODO: ADD MORE TABLE DEFINITIONS HERE
   #

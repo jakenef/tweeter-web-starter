@@ -1,4 +1,3 @@
-import { Buffer } from "buffer";
 import { FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
 
