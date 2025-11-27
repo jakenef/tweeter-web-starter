@@ -1,22 +1,17 @@
 import {
   DeleteCommand,
-  DynamoDBDocumentClient,
   GetCommand,
   PutCommand,
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { AuthDao, AuthTokenData } from "./AuthDao";
-import { DynamoDBClient, ReturnValue } from "@aws-sdk/client-dynamodb";
+import { Dao } from "./Dao";
 
-export class AuthDaoDynamo implements AuthDao {
+export class AuthDaoDynamo extends Dao implements AuthDao {
   readonly tableName = "authtoken_table";
   readonly tokenAttributeName = "token";
   readonly timestampAttributeName = "timestamp";
   readonly userAliasAttributeName = "user_alias";
-
-  private readonly client = DynamoDBDocumentClient.from(
-    new DynamoDBClient({ region: "us-east-2" })
-  );
 
   async createAuthToken(
     token: string,

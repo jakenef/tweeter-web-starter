@@ -1,17 +1,18 @@
+import { AuthToken } from "tweeter-shared";
 import { DaoFactory } from "../dao/DaoFactory";
 import { Service } from "./Service";
+import { AuthTokenData } from "../dao/AuthDao";
 
 export class AuthService implements Service {
   readonly factory = new DaoFactory();
   readonly authDao = this.factory.getAuthDao();
 
-  async isAuthorized(token: string): Promise<boolean> {
+  async checkAuthorization(token: string): Promise<void> {
     const response = await this.authDao.getAuthToken(token);
-    if (response && !this.isExpired(response.timestamp)) {
-      this.refreshAuthToken(token);
-      return true;
+    if (!response || this.isExpired(response.timestamp)) {
+      throw new Error("Unauthorized");
     }
-    return false;
+    await this.refreshAuthToken(token);
   }
 
   private async refreshAuthToken(token: string) {
