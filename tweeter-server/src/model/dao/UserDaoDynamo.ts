@@ -1,4 +1,3 @@
-import { User } from "tweeter-shared";
 import { UserDao, UserData } from "./UserDao";
 import { DeleteCommand, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDao } from "./DynamoDao";

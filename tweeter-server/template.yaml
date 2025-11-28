@@ -605,7 +605,7 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  authtoken_table:
+  authTokenTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: authtoken_table
@@ -620,7 +620,7 @@ Resources:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
 
-  user_table:
+  UserTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: user_table

@@ -190,8 +190,9 @@ export class ServerFacade {
         throw new Error("user and authtoken must both be defined");
       }
     } else {
-      console.error(response);
-      throw new Error(response.message ?? undefined);
+      console.error("serverFacade console error: ", response);
+      const err = new Error((response as any).errorMessage ?? undefined);
+      throw err;
     }
   }
 
@@ -203,7 +204,7 @@ export class ServerFacade {
 
     if (!response.success) {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -223,7 +224,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 

@@ -30,7 +30,7 @@ export class UserService implements Service {
       const passwordMatch = await compare(password, user?.password!);
       if (userAliasMatch && passwordMatch) {
         const authToken = await this.authService.createAuthToken(alias);
-        return [user.dto, authToken];
+        return [user.dto, authToken.dto];
       }
     }
     throw new Error("Unauthorized: Invalid username or password");
@@ -66,7 +66,7 @@ export class UserService implements Service {
 
     await this.userDao.createUser(userData);
     const authToken = await this.authService.createAuthToken(alias);
-    return [userData.dto, authToken];
+    return [userData.dto, authToken.dto];
   }
 
   public async logout(token: string): Promise<void> {
