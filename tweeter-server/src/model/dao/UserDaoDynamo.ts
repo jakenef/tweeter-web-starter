@@ -1,10 +1,10 @@
 import { User } from "tweeter-shared";
 import { UserDao, UserData } from "./UserDao";
-import { DeleteCommand, GetCommand } from "@aws-sdk/lib-dynamodb";
-import { Dao } from "./Dao";
-import { genSalt, hash } from "bcryptjs";
+import { DeleteCommand, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDao } from "./DynamoDao";
+import { hash } from "bcryptjs";
 
-export class UserDaoDynamo extends Dao implements UserDao {
+export class UserDaoDynamo extends DynamoDao implements UserDao {
   readonly tableName = "user_table";
   readonly userAliasAttributeName = "user_alias";
   readonly passwordAttributeName = "password_hash";
@@ -13,12 +13,21 @@ export class UserDaoDynamo extends Dao implements UserDao {
   readonly imageUrlAttributeName = "image_url";
 
   async createUser(userData: UserData): Promise<void> {
-    const passwordHash = await hash(userData.password, 10)
+    const passwordHash = await hash(userData.password, 10);
     const userItem: Record<string, any> = {
-        [this.userAliasAttributeName]: userData.alias,
-        [this.passwordAttributeName]: passwordHash,
-        [this.]
-    }
+      [this.userAliasAttributeName]: userData.alias,
+      [this.passwordAttributeName]: passwordHash,
+      [this.firstNameAttributeName]: userData.firstName,
+      [this.lastNameAttributeName]: userData.lastName,
+      [this.imageUrlAttributeName]: userData.imageUrl,
+    };
+
+    const params = {
+      TableName: this.tableName,
+      Item: userItem,
+    };
+
+    await this.client.send(new PutCommand(params));
   }
 
   async deleteUser(userAlias: string): Promise<void> {
@@ -31,7 +40,7 @@ export class UserDaoDynamo extends Dao implements UserDao {
     await this.client.send(new DeleteCommand(params));
   }
 
-  async getUserData(userAlias: string): Promise<User | null> {
+  async getUserData(userAlias: string): Promise<UserData | null> {
     const params = {
       TableName: this.tableName,
       Key: { [this.userAliasAttributeName]: userAlias },
@@ -40,11 +49,13 @@ export class UserDaoDynamo extends Dao implements UserDao {
     if (!result.Item) {
       return null;
     }
-    const resultUser = new User(
+
+    const resultUser = new UserData(
       result.Item[this.firstNameAttributeName],
       result.Item[this.lastNameAttributeName],
       result.Item[this.userAliasAttributeName],
-      result.Item[this.imageUrlAttributeName]
+      result.Item[this.imageUrlAttributeName],
+      result.Item[this.passwordAttributeName]
     );
     return resultUser;
   }

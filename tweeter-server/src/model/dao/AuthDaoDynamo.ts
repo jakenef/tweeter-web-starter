@@ -5,9 +5,9 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { AuthDao, AuthTokenData } from "./AuthDao";
-import { Dao } from "./Dao";
+import { DynamoDao } from "./DynamoDao";
 
-export class AuthDaoDynamo extends Dao implements AuthDao {
+export class AuthDaoDynamo extends DynamoDao implements AuthDao {
   readonly tableName = "authtoken_table";
   readonly tokenAttributeName = "token";
   readonly timestampAttributeName = "timestamp";

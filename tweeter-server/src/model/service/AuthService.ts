@@ -1,11 +1,11 @@
 import { AuthToken } from "tweeter-shared";
 import { DaoFactory } from "../dao/DaoFactory";
 import { Service } from "./Service";
-import { AuthTokenData } from "../dao/AuthDao";
+import { v4 as uuidv4 } from "uuid";
 
 export class AuthService implements Service {
-  readonly factory = new DaoFactory();
-  readonly authDao = this.factory.getAuthDao();
+  private readonly factory = new DaoFactory();
+  private readonly authDao = this.factory.getAuthDao();
 
   async checkAuthorization(token: string): Promise<void> {
     const response = await this.authDao.getAuthToken(token);
@@ -13,6 +13,17 @@ export class AuthService implements Service {
       throw new Error("Unauthorized");
     }
     await this.refreshAuthToken(token);
+  }
+
+  async createAuthToken(alias: string): Promise<AuthToken> {
+    const token = uuidv4();
+    const now = Date.now();
+    await this.authDao.createAuthToken(token, alias, now);
+    return new AuthToken(token, now);
+  }
+
+  async deleteAuthToken(token: string) {
+    await this.authDao.deleteAuthToken(token);
   }
 
   private async refreshAuthToken(token: string) {

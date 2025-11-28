@@ -1,12 +1,15 @@
-import { FakeData, UserDto, AuthTokenDto } from "tweeter-shared";
+import { UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
 import { AuthService } from "./AuthService";
 import { DaoFactory } from "../dao/DaoFactory";
+import { compare } from "bcryptjs";
+import { UserData } from "../dao/UserDao";
 
 export class UserService implements Service {
-  readonly authService = new AuthService();
-  readonly factory = new DaoFactory();
-  readonly userDao = this.factory.getUserDao();
+  private readonly authService = new AuthService();
+  private readonly factory = new DaoFactory();
+  private readonly userDao = this.factory.getUserDao();
+  private readonly storageDao = this.factory.getStorageDao();
 
   public async getUser(
     authToken: string,
@@ -21,14 +24,16 @@ export class UserService implements Service {
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid alias or password");
+    const user = await this.userDao.getUserData(alias);
+    if (user) {
+      const userAliasMatch = alias === user?.alias;
+      const passwordMatch = await compare(password, user?.password!);
+      if (userAliasMatch && passwordMatch) {
+        const authToken = await this.authService.createAuthToken(alias);
+        return [user.dto, authToken];
+      }
     }
-
-    return [user.dto, FakeData.instance.authToken.dto];
+    throw new Error("Unauthorized: Invalid username or password");
   }
 
   public async register(
@@ -39,18 +44,32 @@ export class UserService implements Service {
     userImageBytesBase64: string,
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    // Not needed now, but will be needed when you make the request to the server in milestone 3
-    // userImageBytesBase64 is already a base64 string
-
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid registration");
+    if (imageFileExtension != "png") {
+      throw new Error("Bad Request: File format not supported");
+    }
+    const aliasTaken = (await this.userDao.getUserData(alias)) ? true : false;
+    if (aliasTaken) {
+      throw new Error("Bad Request: Alias is already taken");
     }
 
-    return [user.dto, FakeData.instance.authToken.dto];
+    const imageUrl = await this.storageDao.createImage(
+      userImageBytesBase64,
+      `${alias}-profile.${imageFileExtension}`
+    );
+    const userData = new UserData(
+      firstName,
+      lastName,
+      alias,
+      imageUrl,
+      password
+    );
+
+    await this.userDao.createUser(userData);
+    const authToken = await this.authService.createAuthToken(alias);
+    return [userData.dto, authToken];
   }
 
-  public async logout(token: string): Promise<void> {}
+  public async logout(token: string): Promise<void> {
+    await this.authService.deleteAuthToken(token);
+  }
 }
