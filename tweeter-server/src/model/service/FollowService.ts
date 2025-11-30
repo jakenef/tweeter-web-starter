@@ -109,14 +109,37 @@ export class FollowService extends Service {
     token: string,
     userToUnfollow: UserDto
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
+    await this.authService.checkAuthorization(token);
+    const unfollowingUserAlias = await this.authService.getUserAliasFromToken(
+      token
+    );
 
-    // TODO: Call the server
+    await this.followDao.deleteFollow(
+      unfollowingUserAlias!,
+      userToUnfollow.alias
+    );
 
-    const followerCount = await this.getFollowerCount(token, userToUnfollow);
-    const followeeCount = await this.getFolloweeCount(token, userToUnfollow);
+    const unfollowingUserCounts =
+      await this.userDao.getFollowerAndFollowingCounts(unfollowingUserAlias!);
+    const userToUnfollowCounts =
+      await this.userDao.getFollowerAndFollowingCounts(userToUnfollow.alias);
 
-    return [followerCount, followeeCount];
+    if (!unfollowingUserCounts || !userToUnfollowCounts) {
+      throw new Error("Not found: The user to unfollow could not be found");
+    }
+
+    await this.userDao.updateUserFollowerCount(
+      userToUnfollow.alias,
+      Math.max(0, userToUnfollowCounts.followerCount - 1)
+    );
+    await this.userDao.updateUserFollowingCount(
+      unfollowingUserAlias!,
+      Math.max(0, unfollowingUserCounts.followingCount - 1)
+    );
+
+    return [
+      Math.max(0, userToUnfollowCounts.followerCount - 1),
+      Math.max(0, unfollowingUserCounts.followingCount - 1),
+    ];
   }
 }
