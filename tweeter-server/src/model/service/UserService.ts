@@ -1,13 +1,11 @@
 import { UserDto, AuthTokenDto } from "tweeter-shared";
 import { Service } from "./Service";
 import { AuthService } from "./AuthService";
-import { DaoFactory } from "../dao/DaoFactory";
 import { compare } from "bcryptjs";
 import { UserData } from "../dao/UserDao";
 
-export class UserService implements Service {
+export class UserService extends Service {
   private readonly authService = new AuthService();
-  private readonly factory = new DaoFactory();
   private readonly userDao = this.factory.getUserDao();
   private readonly storageDao = this.factory.getStorageDao();
 
@@ -17,7 +15,10 @@ export class UserService implements Service {
   ): Promise<UserDto | null> {
     await this.authService.checkAuthorization(authToken);
     const user = await this.userDao.getUserData(alias);
-    return user ? user.dto : null;
+    if (!user) {
+      throw new Error("Not found: User alias not found");
+    }
+    return user.dto;
   }
 
   public async login(
@@ -70,6 +71,7 @@ export class UserService implements Service {
   }
 
   public async logout(token: string): Promise<void> {
+    await this.authService.checkAuthorization(token);
     await this.authService.deleteAuthToken(token);
   }
 }

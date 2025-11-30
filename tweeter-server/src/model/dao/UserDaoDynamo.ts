@@ -1,7 +1,13 @@
 import { UserDao, UserData } from "./UserDao";
-import { DeleteCommand, GetCommand, PutCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  BatchGetCommand,
+  DeleteCommand,
+  GetCommand,
+  PutCommand,
+} from "@aws-sdk/lib-dynamodb";
 import { DynamoDao } from "./DynamoDao";
 import { hash } from "bcryptjs";
+import { User } from "tweeter-shared";
 
 export class UserDaoDynamo extends DynamoDao implements UserDao {
   readonly tableName = "user_table";
@@ -57,5 +63,28 @@ export class UserDaoDynamo extends DynamoDao implements UserDao {
       result.Item[this.passwordAttributeName]
     );
     return resultUser;
+  }
+
+  async getUsersByAliases(aliases: string[]): Promise<User[]> {
+    if (aliases.length === 0) return [];
+    const requestItems = {
+      [this.tableName]: {
+        Keys: aliases.map((alias) => ({ alias })),
+      },
+    };
+    const result = await this.client.send(
+      new BatchGetCommand({ RequestItems: requestItems })
+    );
+    const items = result.Responses?.[this.tableName] ?? [];
+    let users: User[] = items.map(
+      (item) =>
+        new User(
+          item[this.firstNameAttributeName],
+          item[this.lastNameAttributeName],
+          item[this.userAliasAttributeName],
+          item[this.imageUrlAttributeName]
+        )
+    );
+    return users;
   }
 }

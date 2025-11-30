@@ -1,16 +1,27 @@
-import { AuthToken, User, FakeData } from "tweeter-shared";
+import { User, FakeData } from "tweeter-shared";
 import { Service } from "./Service";
 import { UserDto } from "tweeter-shared/src/model/dto/UserDto";
+import { AuthService } from "./AuthService";
 
-export class FollowService implements Service {
+export class FollowService extends Service {
+  private readonly authService = new AuthService();
+  private readonly followDao = this.factory.getFollowDao();
+  private readonly userDao = this.factory.getUserDao();
+
   public async loadMoreFollowees(
     token: string,
     userAlias: string,
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    // TODO: Replace with the result of calling server
-    return this.getFakeData(lastItem, pageSize, userAlias);
+    await this.authService.checkAuthorization(token);
+    const aliasDataPage = await this.followDao.getFollowingPage(
+      userAlias,
+      pageSize,
+      lastItem?.alias
+    );
+    const users = await this.userDao.getUsersByAliases(aliasDataPage.values);
+    return [users.map((user) => user.dto), aliasDataPage.hasMorePages];
   }
 
   public async loadMoreFollowers(

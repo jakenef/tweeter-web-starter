@@ -51,7 +51,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -78,7 +78,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 

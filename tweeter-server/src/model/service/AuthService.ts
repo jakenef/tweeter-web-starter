@@ -1,10 +1,8 @@
 import { AuthToken } from "tweeter-shared";
-import { DaoFactory } from "../dao/DaoFactory";
 import { Service } from "./Service";
 import { v4 as uuidv4 } from "uuid";
 
-export class AuthService implements Service {
-  private readonly factory = new DaoFactory();
+export class AuthService extends Service {
   private readonly authDao = this.factory.getAuthDao();
 
   async checkAuthorization(token: string): Promise<void> {

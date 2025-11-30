@@ -19,4 +19,5 @@ export interface UserDao {
   createUser(userData: UserData): Promise<void>;
   deleteUser(userAlias: string): Promise<void>;
   getUserData(userAlias: string): Promise<UserData | null>;
+  getUsersByAliases(aliases: string[]): Promise<User[]>;
 }

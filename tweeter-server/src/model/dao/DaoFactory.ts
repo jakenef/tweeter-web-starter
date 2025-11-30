@@ -1,5 +1,7 @@
 import { AuthDao } from "./AuthDao";
 import { AuthDaoDynamo } from "./AuthDaoDynamo";
+import { FollowDao } from "./FollowDao";
+import { FollowDaoDynamo } from "./FollowDaoDynamo";
 import { StorageDao } from "./StorageDao";
 import { StorageDaoS3 } from "./StorageDaoS3";
 import { UserDao } from "./UserDao";
@@ -14,5 +16,8 @@ export class DaoFactory {
   }
   getStorageDao(): StorageDao {
     return new StorageDaoS3();
+  }
+  getFollowDao(): FollowDao {
+    return new FollowDaoDynamo();
   }
 }
