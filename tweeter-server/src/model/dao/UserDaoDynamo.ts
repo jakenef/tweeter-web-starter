@@ -4,6 +4,7 @@ import {
   DeleteCommand,
   GetCommand,
   PutCommand,
+  UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import { DynamoDao } from "./DynamoDao";
 import { hash } from "bcryptjs";
@@ -16,6 +17,8 @@ export class UserDaoDynamo extends DynamoDao implements UserDao {
   readonly firstNameAttributeName = "first_name";
   readonly lastNameAttributeName = "last_name";
   readonly imageUrlAttributeName = "image_url";
+  readonly followerCountAttributeName = "follower_count";
+  readonly followingCountAttributeName = "following_count";
 
   async createUser(userData: UserData): Promise<void> {
     const passwordHash = await hash(userData.password, 10);
@@ -25,6 +28,8 @@ export class UserDaoDynamo extends DynamoDao implements UserDao {
       [this.firstNameAttributeName]: userData.firstName,
       [this.lastNameAttributeName]: userData.lastName,
       [this.imageUrlAttributeName]: userData.imageUrl,
+      [this.followerCountAttributeName]: 0,
+      [this.followingCountAttributeName]: 0,
     };
 
     const params = {
@@ -86,5 +91,51 @@ export class UserDaoDynamo extends DynamoDao implements UserDao {
         )
     );
     return users;
+  }
+
+  async getFollowerAndFollowingCounts(
+    userAlias: string
+  ): Promise<{ followerCount: number; followingCount: number } | null> {
+    const params = {
+      TableName: this.tableName,
+      Key: { [this.userAliasAttributeName]: userAlias },
+    };
+    const result = await this.client.send(new GetCommand(params));
+    if (!result.Item) {
+      return null;
+    }
+    const followingCount = result.Item[this.followingCountAttributeName] ?? 0;
+    const followerCount = result.Item[this.followerCountAttributeName] ?? 0;
+    return { followerCount, followingCount };
+  }
+
+  async updateUserFollowingCount(
+    userAlias: string,
+    followingCount: number
+  ): Promise<void> {
+    const params = {
+      TableName: this.tableName,
+      Key: { [this.userAliasAttributeName]: userAlias },
+      UpdateExpression: `SET ${this.followingCountAttributeName} = :count`,
+      ExpressionAttributeValues: {
+        ":count": followingCount,
+      },
+    };
+    await this.client.send(new UpdateCommand(params));
+  }
+
+  async updateUserFollowerCount(
+    userAlias: string,
+    followerCount: number
+  ): Promise<void> {
+    const params = {
+      TableName: this.tableName,
+      Key: { [this.userAliasAttributeName]: userAlias },
+      UpdateExpression: `SET ${this.followerCountAttributeName} = :count`,
+      ExpressionAttributeValues: {
+        ":count": followerCount,
+      },
+    };
+    await this.client.send(new UpdateCommand(params));
   }
 }

@@ -13,6 +13,11 @@ export class AuthService extends Service {
     await this.refreshAuthToken(token);
   }
 
+  async getUserAliasFromToken(token: string): Promise<string | undefined> {
+    const response = await this.authDao.getAuthToken(token);
+    return response?.userAlias;
+  }
+
   async createAuthToken(alias: string): Promise<AuthToken> {
     const token = uuidv4();
     const now = Date.now();

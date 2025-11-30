@@ -20,4 +20,15 @@ export interface UserDao {
   deleteUser(userAlias: string): Promise<void>;
   getUserData(userAlias: string): Promise<UserData | null>;
   getUsersByAliases(aliases: string[]): Promise<User[]>;
+  getFollowerAndFollowingCounts(
+    userAlias: string
+  ): Promise<{ followerCount: number; followingCount: number } | null>;
+  updateUserFollowingCount(
+    userAlias: string,
+    followingCount: number
+  ): Promise<void>;
+  updateUserFollowerCount(
+    userAlias: string,
+    followerCount: number
+  ): Promise<void>;
 }
