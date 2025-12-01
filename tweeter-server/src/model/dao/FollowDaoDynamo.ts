@@ -86,7 +86,7 @@ export class FollowDaoDynamo extends DynamoDao implements FollowDao {
       },
       TableName: this.tableName,
       Limit: limit,
-      IndexName: "follow-index",
+      IndexName: "follow_index",
       ExclusiveStartKey:
         lastFollowerHandle === undefined
           ? undefined

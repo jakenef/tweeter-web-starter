@@ -9,20 +9,33 @@ type tableNames = "story_table" | "feed_table";
 export class StatusDaoDynamo extends DynamoDao implements StatusDao {
   private readonly feedTableName = "feed_table";
   private readonly storyTableName = "story_table";
-  private readonly userAliasAttributeName = "user_alias";
+
+  // keys
+  private readonly feedOwnerAliasAttributeName = "feed_owner_alias";
+  private readonly authorAliasAttributeName = "user_alias";
   private readonly timestampAttributeName = "timestamp";
+
   private readonly postAttributeName = "post";
 
-  // storing a copy of basic user info to prevent multiple db calls
+  // storing a copy of basic author info to prevent multiple db calls
   private readonly userFirstnameAttributeName = "user_firstname";
   private readonly userLastnameAttributeName = "user_lastname";
   private readonly userImageUrlAttributeName = "user_image_url";
 
-  private async createStatus(tableName: tableNames, status: Status) {
+  private async createStatus(
+    tableName: tableNames,
+    status: Status,
+    feedOwnerAlias?: string
+  ) {
+    const isFeed = tableName === this.feedTableName;
+
     const statusItem: Record<string, any> = {
-      [this.userAliasAttributeName]: status.user.alias,
+      [isFeed
+        ? this.feedOwnerAliasAttributeName
+        : this.authorAliasAttributeName]: feedOwnerAlias ?? status.user.alias,
       [this.timestampAttributeName]: status.timestamp,
       [this.postAttributeName]: status.post,
+      [this.authorAliasAttributeName]: status.user.alias,
       [this.userFirstnameAttributeName]: status.user.firstName,
       [this.userLastnameAttributeName]: status.user.lastName,
       [this.userImageUrlAttributeName]: status.user.imageUrl,
@@ -42,18 +55,23 @@ export class StatusDaoDynamo extends DynamoDao implements StatusDao {
     limit: number,
     lastTimestamp?: number
   ) {
+    const isFeed = tableName === this.feedTableName;
+    const partitionKeyName = isFeed
+      ? this.feedOwnerAliasAttributeName
+      : this.authorAliasAttributeName;
     const params = {
-      KeyConditionExpression: this.userAliasAttributeName + " = :userAlias",
+      KeyConditionExpression: partitionKeyName + " = :userAlias",
       ExpressionAttributeValues: {
         ":userAlias": userAlias,
       },
       TableName: tableName,
       Limit: limit,
+      ScanIndexForward: false,
       ExclusiveStartKey:
         lastTimestamp === undefined
           ? undefined
           : {
-              [this.userAliasAttributeName]: userAlias,
+              [partitionKeyName]: userAlias,
               [this.timestampAttributeName]: lastTimestamp,
             },
     };
@@ -67,7 +85,7 @@ export class StatusDaoDynamo extends DynamoDao implements StatusDao {
         new User(
           item[this.userFirstnameAttributeName],
           item[this.userLastnameAttributeName],
-          item[this.userAliasAttributeName],
+          item[this.authorAliasAttributeName],
           item[this.userImageUrlAttributeName]
         ),
         item[this.timestampAttributeName]
@@ -82,8 +100,11 @@ export class StatusDaoDynamo extends DynamoDao implements StatusDao {
     await this.createStatus(this.storyTableName, status);
   }
 
-  async createFeedStatus(status: Status): Promise<void> {
-    await this.createStatus(this.feedTableName, status);
+  async createFeedStatus(
+    status: Status,
+    feedOwnerAlias: string
+  ): Promise<void> {
+    await this.createStatus(this.feedTableName, status, feedOwnerAlias);
   }
 
   async getStoryPageByAlias(

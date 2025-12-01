@@ -92,7 +92,7 @@ export class ServerFacade {
       return response.count;
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -106,7 +106,7 @@ export class ServerFacade {
       return response.count;
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -122,7 +122,7 @@ export class ServerFacade {
       return response.isFollower;
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -136,7 +136,7 @@ export class ServerFacade {
       return [response.followerCount, response.followeeCount];
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -152,7 +152,7 @@ export class ServerFacade {
       return [response.followerCount, response.followeeCount];
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -171,7 +171,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -250,7 +250,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -276,7 +276,7 @@ export class ServerFacade {
       }
     } else {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 
@@ -288,7 +288,7 @@ export class ServerFacade {
 
     if (!response.success) {
       console.error(response);
-      throw new Error(response.message ?? undefined);
+      throw new Error((response as any).errorMessage ?? undefined);
     }
   }
 }

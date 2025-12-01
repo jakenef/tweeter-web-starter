@@ -3,7 +3,7 @@ import { DataPage } from "../util/DataPage";
 
 export interface StatusDao {
   createStoryStatus(status: Status): Promise<void>;
-  createFeedStatus(status: Status): Promise<void>;
+  createFeedStatus(status: Status, feedOwnerAlias: string): Promise<void>;
   getStoryPageByAlias(
     userAlias: string,
     limit: number,

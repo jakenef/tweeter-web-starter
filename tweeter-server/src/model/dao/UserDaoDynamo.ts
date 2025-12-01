@@ -74,7 +74,9 @@ export class UserDaoDynamo extends DynamoDao implements UserDao {
     if (aliases.length === 0) return [];
     const requestItems = {
       [this.tableName]: {
-        Keys: aliases.map((alias) => ({ alias })),
+        Keys: aliases.map((alias) => ({
+          [this.userAliasAttributeName]: alias,
+        })),
       },
     };
     const result = await this.client.send(

@@ -625,12 +625,12 @@ Resources:
     Properties:
       TableName: feed_table
       AttributeDefinitions:
-        - AttributeName: user_alias
+        - AttributeName: feed_owner_alias
           AttributeType: S
         - AttributeName: timestamp
           AttributeType: N
       KeySchema:
-        - AttributeName: user_alias
+        - AttributeName: feed_owner_alias
           KeyType: HASH
         - AttributeName: timestamp
           KeyType: RANGE
@@ -638,7 +638,6 @@ Resources:
       ProvisionedThroughput:
         ReadCapacityUnits: 1
         WriteCapacityUnits: 1
-
   #
   # TODO: ADD MORE TABLE DEFINITIONS HERE
   #
