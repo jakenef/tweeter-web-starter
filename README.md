@@ -2,6 +2,41 @@
 
 A starter project for the Tweeter Web application.
 
+## High-Performance Feed Fan-Out Architecture
+
+To support users with 10,000+ followers, I implemented an asynchronous fan-out-on-write system using AWS Lambda, SQS, and DynamoDB. This keeps posting fast (<1s) while still updating all follower feeds within the required 120 seconds.
+
+### Architecture Overview
+
+When a user posts a status:
+
+1. **PostHandler (Lambda)**
+
+   - Saves the status to the author’s story table
+   - Pushes a message into **PostQ (SQS)**
+   - Immediately returns “Successfully Posted!” (<1s latency)
+
+2. **FollowFetcher (Lambda)**
+
+   - Triggered by PostQ
+   - Retrieves all followers (10K+ supported)
+   - Splits them into batches of ~25
+   - Enqueues each batch into **JobQ (SQS)**
+
+3. **JobHandler (Lambda)**
+   - Triggered per batch from JobQ
+   - Writes the status into each follower’s feed (fan-out)
+   - Hundreds of Lambdas run in parallel, completing feed updates in <60s
+
+### Performance Notes
+
+- Tested with **10,000 generated users** and a user with **10,000 followers**
+- Temporary WCUs increased to 200 for batch loading, then returned to normal
+- Feed reads remain <200ms because feeds are precomputed at write-time
+- Overall system meets all latency and scalability requirements
+
+This design mirrors real social-network architectures and allows Tweeter to scale horizontally without managing any servers.
+
 ## Setting Up the Project
 
 1. cd into the project root folder

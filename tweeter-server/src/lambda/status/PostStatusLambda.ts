@@ -5,7 +5,8 @@ export const handler = async (
   request: PostStatusRequest
 ): Promise<TweeterResponse> => {
   const statusService = new StatusService();
-  await statusService.postStatus(request.token, request.newStatus);
+
+  await statusService.performantPostStatus(request.token, request.newStatus);
 
   const response: TweeterResponse = {
     success: true,

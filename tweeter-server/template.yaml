@@ -290,10 +290,15 @@ Resources:
   # SQS Queues  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
   #
 
-  #   MyQueue:
-  #     Type: AWS::SQS::Queue
-  #     Properties:
-  #       QueueName: MyQueue
+  PostQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: PostQueue
+
+  JobQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: JobQueue
 
   #
   # Lambda Layer (reused by all Lambda functions)
@@ -522,18 +527,18 @@ Resources:
   # SQS Queue Lambda Functions  (This will become relevant in Milestone 4. For M3, leave this section commented out.)
   #
 
-  #   MyQueueFunction:
-  #     Type: AWS::Serverless::Function
-  #     Properties:
-  #       FunctionName: MyQueueFunction
-  #       Handler: <PATH TO LAMBDA HANDLER>
-  #       Policies: *commonPolicies
-  #       Events:
-  #         SQSTrigger:
-  #           Type: SQS
-  #           Properties:
-  #             Queue: !GetAtt MyQueue.Arn
-  #             Enabled: true
+  FollowFetcher:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: FollowFetcher
+      Handler: lambda/follow/FollowFetcher.handler
+      Policies: *commonPolicies
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt PostQueue.Arn
+            Enabled: true
 
   #
   # DynamoDB Tables
