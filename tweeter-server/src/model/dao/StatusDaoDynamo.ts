@@ -158,12 +158,45 @@ export class StatusDaoDynamo extends DynamoDao implements StatusDao {
       },
     }));
 
-    const params = {
-      RequestItems: {
-        [this.feedTableName]: putRequests,
-      },
-    };
+    let unprocessedItems: any[] = putRequests;
+    let retryCount = 0;
+    const maxRetries = 5;
 
-    await this.client.send(new BatchWriteCommand(params));
+    while (unprocessedItems.length > 0 && retryCount < maxRetries) {
+      const params = {
+        RequestItems: {
+          [this.feedTableName]: unprocessedItems,
+        },
+      };
+
+      const response = await this.client.send(new BatchWriteCommand(params));
+
+      // Check if there are unprocessed items
+      if (
+        response.UnprocessedItems &&
+        response.UnprocessedItems[this.feedTableName]
+      ) {
+        unprocessedItems = response.UnprocessedItems[this.feedTableName] || [];
+        retryCount++;
+
+        // Exponential backoff
+        if (unprocessedItems.length > 0) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, 100 * Math.pow(2, retryCount))
+          );
+        }
+      } else {
+        unprocessedItems = [];
+      }
+    }
+
+    if (unprocessedItems.length > 0) {
+      console.error(
+        `Failed to process ${unprocessedItems.length} items after ${maxRetries} retries`
+      );
+      throw new Error(
+        `Failed to write ${unprocessedItems.length} feed items after retries`
+      );
+    }
   }
 }

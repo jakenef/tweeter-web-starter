@@ -294,11 +294,13 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: PostQueue
+      VisibilityTimeout: 360
 
   JobQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: JobQueue
+      VisibilityTimeout: 360
 
   #
   # Lambda Layer (reused by all Lambda functions)
@@ -533,12 +535,14 @@ Resources:
       FunctionName: FollowFetcher
       Handler: lambda/follow/FollowFetcher.handler
       Policies: *commonPolicies
+      Timeout: 60
       Events:
         SQSTrigger:
           Type: SQS
           Properties:
             Queue: !GetAtt PostQueue.Arn
             Enabled: true
+            BatchSize: 1
 
   JobHandler:
     Type: AWS::Serverless::Function
@@ -546,12 +550,16 @@ Resources:
       FunctionName: JobHandler
       Handler: lambda/status/JobHandler.handler
       Policies: *commonPolicies
+      Timeout: 60
       Events:
         SQSTrigger:
           Type: SQS
           Properties:
             Queue: !GetAtt JobQueue.Arn
             Enabled: true
+            BatchSize: 1
+            ScalingConfig:
+              MaximumConcurrency: 10
 
   #
   # DynamoDB Tables
@@ -574,8 +582,8 @@ Resources:
           KeyType: RANGE
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
       GlobalSecondaryIndexes:
         - IndexName: follow_index ##### TODO: Set the actual index name
           KeySchema:
@@ -584,8 +592,8 @@ Resources:
             - AttributeName: follower_alias ##### TODO: Set index sort key
               KeyType: RANGE
           ProvisionedThroughput:
-            ReadCapacityUnits: 1
-            WriteCapacityUnits: 1
+            ReadCapacityUnits: 100
+            WriteCapacityUnits: 100
           Projection:
             ProjectionType: ALL
 
@@ -601,8 +609,8 @@ Resources:
           KeyType: HASH
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
 
   UserTable:
     Type: AWS::DynamoDB::Table
@@ -616,8 +624,8 @@ Resources:
           KeyType: HASH
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
 
   StoryTable:
     Type: AWS::DynamoDB::Table
@@ -635,8 +643,8 @@ Resources:
           KeyType: RANGE
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
 
   FeedTable:
     Type: AWS::DynamoDB::Table
@@ -654,8 +662,8 @@ Resources:
           KeyType: RANGE
       BillingMode: PROVISIONED
       ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
+        ReadCapacityUnits: 100
+        WriteCapacityUnits: 100
   #
   # TODO: ADD MORE TABLE DEFINITIONS HERE
   #
