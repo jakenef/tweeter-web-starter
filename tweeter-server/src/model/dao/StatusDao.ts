@@ -14,4 +14,8 @@ export interface StatusDao {
     limit: number,
     lastTimestamp?: number
   ): Promise<DataPage<Status>>;
+  batchCreateFeedStatuses(
+    status: Status,
+    feedOwnerAliases: string[]
+  ): Promise<void>;
 }

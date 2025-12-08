@@ -540,6 +540,19 @@ Resources:
             Queue: !GetAtt PostQueue.Arn
             Enabled: true
 
+  JobHandler:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: JobHandler
+      Handler: lambda/status/JobHandler.handler
+      Policies: *commonPolicies
+      Events:
+        SQSTrigger:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt JobQueue.Arn
+            Enabled: true
+
   #
   # DynamoDB Tables
   #

@@ -2,7 +2,11 @@ import { Status, User } from "tweeter-shared";
 import { DataPage } from "../util/DataPage";
 import { DynamoDao } from "./DynamoDao";
 import { StatusDao } from "./StatusDao";
-import { PutCommand, QueryCommand } from "@aws-sdk/lib-dynamodb";
+import {
+  BatchWriteCommand,
+  PutCommand,
+  QueryCommand,
+} from "@aws-sdk/lib-dynamodb";
 
 type tableNames = "story_table" | "feed_table";
 
@@ -131,5 +135,35 @@ export class StatusDaoDynamo extends DynamoDao implements StatusDao {
       limit,
       lastTimestamp
     );
+  }
+
+  async batchCreateFeedStatuses(
+    status: Status,
+    feedOwnerAliases: string[]
+  ): Promise<void> {
+    if (feedOwnerAliases.length > 25) {
+      throw new Error("batch size limit exceeded");
+    }
+    const putRequests = feedOwnerAliases.map((feedOwnerAlias) => ({
+      PutRequest: {
+        Item: {
+          [this.feedOwnerAliasAttributeName]: feedOwnerAlias,
+          [this.timestampAttributeName]: status.timestamp,
+          [this.postAttributeName]: status.post,
+          [this.authorAliasAttributeName]: status.user.alias,
+          [this.userFirstnameAttributeName]: status.user.firstName,
+          [this.userLastnameAttributeName]: status.user.lastName,
+          [this.userImageUrlAttributeName]: status.user.imageUrl,
+        },
+      },
+    }));
+
+    const params = {
+      RequestItems: {
+        [this.feedTableName]: putRequests,
+      },
+    };
+
+    await this.client.send(new BatchWriteCommand(params));
   }
 }

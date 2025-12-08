@@ -141,4 +141,11 @@ export class StatusService extends Service {
       }
     }
   }
+
+  public async processJobQueueMessage(
+    followerAliases: string[],
+    status: Status
+  ) {
+    await this.statusDao.batchCreateFeedStatuses(status, followerAliases);
+  }
 }
