@@ -1,6 +1,5 @@
 import { StatusService } from "../src/model.service/StatusService";
 import { ServerFacade } from "../src/network/ServerFacade";
-import { Status } from "tweeter-shared";
 import { mock, instance, verify, anything } from "ts-mockito";
 import {
   PostStatusPresenter,
